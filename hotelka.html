@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8" />
+  <title>Хотелки Дениса і Улі</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Roboto&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background-color: #0d0d0d;
+      color: #f2f2f2;
+      padding: 20px;
+    }
+
+    h1 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 3em;
+      text-align: center;
+      color: #ffb6c1;
+      animation: fadeIn 2s ease;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 500px;
+      margin: 0 auto;
+      animation: slideUp 1.5s ease;
+    }
+
+    input, textarea, select, button {
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1em;
+      background-color: #1a1a1a;
+      color: #fff;
+      transition: all 0.3s ease;
+    }
+
+    button {
+      background-color: #ff69b4;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #ff85c1;
+      transform: scale(1.05);
+    }
+
+    .list {
+      margin-top: 30px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .item {
+      background-color: #1a1a1a;
+      padding: 15px;
+      margin-bottom: 15px;
+      border-radius: 10px;
+      animation: fadeIn 1s ease;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .item.done {
+      opacity: 0.6;
+      text-decoration: line-through;
+    }
+
+    .meta {
+      font-size: 0.8em;
+      color: #aaa;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .actions button {
+      background-color: #333;
+      font-size: 0.9em;
+    }
+
+    .actions button:hover {
+      background-color: #555;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(50px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+  <h1>Хотелки Дениса і Улі 💫</h1>
+
+  <div class="form">
+    <input type="text" id="link" placeholder="Посилання на хотелку" />
+    <textarea id="comment" placeholder="Коментар або опис"></textarea>
+    <select id="author">
+      <option value="Денис">Денис</option>
+      <option value="Уля">Уля</option>
+    </select>
+    <button onclick="addItem()">Додати хотелку</button>
+  </div>
+
+  <div class="list" id="list"></div>
+
+  <script>
+    const list = document.getElementById('list');
+
+    function loadItems() {
+      const items = JSON.parse(localStorage.getItem('wishlist')) || [];
+      list.innerHTML = '';
+      items.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'item' + (item.done ? ' done' : '');
+        div.innerHTML = `
+          <a href="${item.link}" target="_blank">${item.link}</a>
+          <p>${item.comment}</p>
+          <div class="meta">Автор: ${item.author} | Дата: ${item.date}</div>
+          <div class="actions">
+            <button onclick="toggleDone(${index})">${item.done ? '❌ Не виконано' : '✅ Виконано'}</button>
+            <button onclick="deleteItem(${index})">🗑️ Видалити</button>
+          </div>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+    function addItem() {
+      const link = document.getElementById('link').value;
+      const comment = document.getElementById('comment').value;
+      const author = document.getElementById('author').value;
+      const date = new Date().toLocaleString();
+
+      if (!link) return alert('Введи посилання!');
+
+      const newItem = { link, comment, author, date, done: false };
+      const items = JSON.parse(localStorage.getItem('wishlist')) || [];
+      items.push(newItem);
+      localStorage.setItem('wishlist', JSON.stringify(items));
+      loadItems();
+
+      document.getElementById('link').value = '';
+      document.getElementById('comment').value = '';
+    }
+
+    function toggleDone(index) {
+      const items = JSON.parse(localStorage.getItem('wishlist')) || [];
+      items[index].done = !items[index].done;
+      localStorage.setItem('wishlist', JSON.stringify(items));
+      loadItems();
+    }
+
+    function deleteItem(index) {
+      const items = JSON.parse(localStorage.getItem('wishlist')) || [];
+      items.splice(index, 1);
+      localStorage.setItem('wishlist', JSON.stringify(items));
+      loadItems();
+    }
+
+    loadItems();
+  </script>
+</body>
+</html>
